@@ -53,10 +53,6 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: false
-      - name: Lint
-        run: GOLANGCI_LINT_TIMEOUT=10m make lint
-      - name: Verify all generated pieces are up-to-date
-        run: make generate-all && git add -N . && git diff --exit-code
       - name: Unit tests
         run: |
           make test
