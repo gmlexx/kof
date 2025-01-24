@@ -109,6 +109,28 @@ dev-storage-deploy: dev ## Deploy kof-storage helm chart to the K8s cluster spec
 	@$(YQ) eval -i '.["victoria-logs-single"].server.persistentVolume.storageClassName = "standard"' dev/storage-values.yaml
 	$(HELM) upgrade -i $(KOF_STORAGE_NAME) ./charts/kof-storage --create-namespace -n $(KOF_STORAGE_NG) -f dev/storage-values.yaml
 
+.PHONY: dev-ms-deploy
+dev-ms-deploy: dev promxy-operator-docker-build ## Deploy Mothership helm chart to the K8s cluster specified in ~/.kube/config for a remote storage cluster without victoria metrics to avoid local storage conflicts.
+	cp -f $(TEMPLATES_DIR)/kof-mothership/values.yaml dev/mothership-values.yaml
+	@$(YQ) eval -i '.kcm.installTemplates = true' dev/mothership-values.yaml
+	@$(YQ) eval -i '.kcm.kof.clusterProfiles.kof-aws-dns-secrets = {"matchLabels": {"k0rdent.mirantis.com/kof-aws-dns-secrets": "true"}, "secrets": ["external-dns-aws-credentials"]}' dev/mothership-values.yaml
+	@$(YQ) eval -i '.grafana.logSources = [{"name": "$(USER)-aws-storage", "url": "https://vmauth.$(STORAGE_DOMAIN)/vls", "type": "victoriametrics-logs-datasource", "auth": {"credentials_secret_name": "storage-vmuser-credentials", "username_key": "username", "password_key": "password"}}]' dev/mothership-values.yaml
+
+	@$(YQ) eval -i '.kcm.kof.charts.collectors.version = "$(COLLECTORS_VERSION)"' dev/mothership-values.yaml
+	@$(YQ) eval -i '.kcm.kof.charts.storage.version = "$(STORAGE_VERSION)"' dev/mothership-values.yaml
+	@$(YQ) eval -i '.promxy.operator.image.repository = "promxy-operator-controller"' dev/mothership-values.yaml
+	@$(YQ) eval -i '.victoriametrics.enabled = false' dev/mothership-values.yaml
+	@$(YQ) eval -i '.victoria-metrics-operator.enabled = false' dev/mothership-values.yaml
+	@$(YQ) eval -i '.grafana.enabled = false' dev/mothership-values.yaml
+	@if [ "$(REGISTRY_REPO)" = "oci://127.0.0.1:$(REGISTRY_PORT)/charts" ]; then \
+		$(YQ) eval -i '.kcm.kof.repo.url = "oci://$(REGISTRY_NAME):5000/charts"' dev/mothership-values.yaml; \
+		$(YQ) eval -i '.kcm.kof.repo.insecure = true' dev/mothership-values.yaml; \
+		$(YQ) eval -i '.kcm.kof.repo.type = "oci"' dev/mothership-values.yaml; \
+	else \
+		$(YQ) eval -i '.kcm.kof.repo.url = "$(REGISTRY_REPO)"' dev/mothership-values.yaml; \
+	fi; \
+	$(HELM) upgrade -i kof-mothership ./charts/kof-mothership -n kof --create-namespace -f dev/mothership-values.yaml
+
 .PHONY: dev-ms-deploy-aws
 dev-ms-deploy-aws: dev promxy-operator-docker-build ## Deploy Mothership helm chart to the K8s cluster specified in ~/.kube/config for a remote storage cluster
 	cp -f $(TEMPLATES_DIR)/kof-mothership/values.yaml dev/mothership-values.yaml
