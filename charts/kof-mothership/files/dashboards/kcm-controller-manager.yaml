@@ -1,4 +1,6 @@
 {{- if (.helm).Values.kcm.serviceMonitor.enabled }}
+{{- $Values := (.helm).Values | default .Values }}
+{{- $defaultDatasource := "prometheus" -}}
 __inputs:
 - name: DS_PROMETHEUS
   label: Prometheus
@@ -620,17 +622,17 @@ templating:
   list:
   - current:
       selected: false
-      text: default
-      value: default
+      text: ''
+      value: ''
     hide: 0
     includeAll: false
-    label: Data source
     multi: false
     name: datasource
     options: []
-    query: prometheus
+    query: {{ $defaultDatasource }}
+    queryValue: ''
     refresh: 1
-    regex: ''
+    regex: '/promxy/'
     skipUrlSync: false
     type: datasource
   - current:
