@@ -103,8 +103,9 @@ dev-collectors-deploy: dev ## Deploy kof-collector helm chart to the K8s cluster
 .PHONY: dev-storage-deploy
 dev-storage-deploy: dev ## Deploy kof-storage helm chart to the K8s cluster specified in ~/.kube/config
 	cp -f $(TEMPLATES_DIR)/kof-storage/values.yaml dev/storage-values.yaml
-	@$(YQ) eval -i '.grafana.ingress.enabled = false' dev/storage-values.yaml
-	@$(YQ) eval -i '.victoriametrics.vmcluster.replicaCount = 1' dev/storage-values.yaml
+	@$(YQ) eval -i '.grafana.enabled = false' dev/storage-values.yaml
+	@$(YQ) eval -i '.victoria-metrics-operator.enabled = false' dev/storage-values.yaml
+	@$(YQ) eval -i '.victoriametrics.enabled = false' dev/storage-values.yaml
 	@$(YQ) eval -i '.global.storageClass = "standard"' dev/storage-values.yaml
 	@$(YQ) eval -i '.["victoria-logs-single"].server.persistentVolume.storageClassName = "standard"' dev/storage-values.yaml
 	$(HELM) upgrade -i $(KOF_STORAGE_NAME) ./charts/kof-storage --create-namespace -n $(KOF_STORAGE_NG) -f dev/storage-values.yaml
