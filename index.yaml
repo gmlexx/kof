@@ -1,0 +1,57 @@
+apiVersion: v1
+entries:
+  kof-mothership:
+  - apiVersion: v2
+    appVersion: "1.0"
+    created: "2025-01-28T11:47:15.40171316Z"
+    dependencies:
+    - condition: grafana.enabled
+      name: grafana-operator
+      repository: oci://ghcr.io/grafana/helm-charts
+      version: v5.13.0
+    - condition: victoria-metrics-operator.enabled
+      name: victoria-metrics-operator
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.36.*
+    - condition: cluster-api-visualizer.enabled
+      name: cluster-api-visualizer
+      repository: https://jont828.github.io/cluster-api-visualizer/charts
+      version: 1.4.*
+    - condition: sveltos-dashboard.enabled
+      name: sveltos-dashboard
+      repository: https://projectsveltos.github.io/dashboard-helm-chart
+      version: 0.44.*
+    description: A Helm chart that deploys Grafana, Promxy, and VictoriaMetrics.
+    digest: 88bb4396be5efd1bc6bbedff8ba1c3d04aa8bc05a3c63c05249cd7e8a12b2b14
+    name: kof-mothership
+    urls:
+    - https://github.com/gmlexx/kof/releases/download/kof-mothership-0.1.11/kof-mothership-0.1.11.tgz
+    version: 0.1.11
+  kof-storage:
+  - apiVersion: v2
+    appVersion: "1.0"
+    created: "2025-01-28T11:47:15.568885354Z"
+    dependencies:
+    - condition: grafana.enabled
+      name: grafana-operator
+      repository: oci://ghcr.io/grafana/helm-charts
+      version: v5.15.1
+    - condition: victoria-metrics-operator.enabled
+      name: victoria-metrics-operator
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.40.*
+    - condition: victoria-logs-single.enabled
+      name: victoria-logs-single
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.8.*
+    - condition: external-dns.enabled
+      name: external-dns
+      repository: https://kubernetes-sigs.github.io/external-dns/
+      version: 1.15.*
+    description: A Helm chart that deploys Grafana, and VictoriaMetrics.
+    digest: fc27eabc0dd042f50c3fd97e4033185826ebb1f783bba5ad53cf21cb8f75d1ed
+    name: kof-storage
+    urls:
+    - https://github.com/gmlexx/kof/releases/download/kof-storage-0.1.4/kof-storage-0.1.4.tgz
+    version: 0.1.4
+generated: "2025-01-28T11:47:15.568894501Z"
