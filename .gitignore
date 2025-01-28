@@ -1,1 +1,5 @@
 charts/*/charts
+bin/*
+dev/*
+cover.out
+promxy-operator/bin/*
