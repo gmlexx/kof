@@ -1,5 +1,28 @@
 apiVersion: v1
 entries:
+  kof-collectors:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-01-28T12:37:19.900121466Z"
+    dependencies:
+    - condition: prometheus-node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.39.*
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.25.*
+    - condition: opencost.enabled
+      name: opencost
+      repository: https://opencost.github.io/opencost-helm-chart
+      version: 1.42.*
+    description: A Helm chart that deploys OpenTelemetryCollector resources
+    digest: 89b7e10dc9af9ca3dfa1bf4c4a6fe03921a0145f02001d8a5f1ffc288fc75ba1
+    name: kof-collectors
+    urls:
+    - https://github.com/gmlexx/kof/releases/download/kof-collectors-0.1.0/kof-collectors-0.1.0.tgz
+    version: 0.1.0
   kof-mothership:
   - apiVersion: v2
     appVersion: "1.0"
@@ -27,6 +50,51 @@ entries:
     urls:
     - https://github.com/gmlexx/kof/releases/download/kof-mothership-0.1.11/kof-mothership-0.1.11.tgz
     version: 0.1.11
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-01-28T12:37:20.046489544Z"
+    dependencies:
+    - condition: grafana.enabled
+      name: grafana-operator
+      repository: oci://ghcr.io/grafana/helm-charts
+      version: v5.13.0
+    - condition: victoria-metrics-operator.enabled
+      name: victoria-metrics-operator
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.36.*
+    - condition: cluster-api-visualizer.enabled
+      name: cluster-api-visualizer
+      repository: https://jont828.github.io/cluster-api-visualizer/charts
+      version: 1.4.*
+    - condition: sveltos-dashboard.enabled
+      name: sveltos-dashboard
+      repository: https://projectsveltos.github.io/dashboard-helm-chart
+      version: 0.44.*
+    description: A Helm chart that deploys Grafana, Promxy, and VictoriaMetrics.
+    digest: 8f2249b7488526de62d3e08dcbd9764fad2ea65f0bb49e1c53f54f28f2fd803e
+    name: kof-mothership
+    urls:
+    - https://github.com/gmlexx/kof/releases/download/kof-mothership-0.1.0/kof-mothership-0.1.0.tgz
+    version: 0.1.0
+  kof-operators:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-01-28T12:37:20.182377991Z"
+    dependencies:
+    - condition: opentelemetry-operator.enabled
+      name: opentelemetry-operator
+      repository: https://open-telemetry.github.io/opentelemetry-helm-charts
+      version: 0.75.*
+    - condition: prometheus-operator-crds.enabled
+      name: prometheus-operator-crds
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 15.0.*
+    description: A Helm chart that deploys opentelemetry-operator and prometheus CRDs
+    digest: bbfdd8f7d443506b0cb79ee45bf2ac37be2ecdad39853507c8af7c00cc881442
+    name: kof-operators
+    urls:
+    - https://github.com/gmlexx/kof/releases/download/kof-operators-0.1.0/kof-operators-0.1.0.tgz
+    version: 0.1.0
   kof-storage:
   - apiVersion: v2
     appVersion: "1.0"
@@ -54,4 +122,30 @@ entries:
     urls:
     - https://github.com/gmlexx/kof/releases/download/kof-storage-0.1.4/kof-storage-0.1.4.tgz
     version: 0.1.4
-generated: "2025-01-28T11:47:15.568894501Z"
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2025-01-28T12:37:20.366072299Z"
+    dependencies:
+    - condition: grafana.enabled
+      name: grafana-operator
+      repository: oci://ghcr.io/grafana/helm-charts
+      version: v5.15.1
+    - condition: victoria-metrics-operator.enabled
+      name: victoria-metrics-operator
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.40.*
+    - condition: victoria-logs-single.enabled
+      name: victoria-logs-single
+      repository: https://victoriametrics.github.io/helm-charts/
+      version: 0.8.*
+    - condition: external-dns.enabled
+      name: external-dns
+      repository: https://kubernetes-sigs.github.io/external-dns/
+      version: 1.15.*
+    description: A Helm chart that deploys Grafana, and VictoriaMetrics.
+    digest: 00867bf169f5a974f3b2db06b99a1699fee75cf674ccc8c39fbe93d5125c28eb
+    name: kof-storage
+    urls:
+    - https://github.com/gmlexx/kof/releases/download/kof-storage-0.1.0/kof-storage-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-01-28T12:37:20.366086405Z"
