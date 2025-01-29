@@ -29,6 +29,18 @@ rules:
   - update
   - watch
 - apiGroups:
+  - grafana.integreatly.org
+  resources:
+  - grafanadatasources
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
   - kof.k0rdent.mirantis.com
   resources:
   - promxyservergroups/finalizers
