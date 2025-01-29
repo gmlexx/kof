@@ -202,9 +202,13 @@ func CreateGrafanaDatasource(r *PromxyServerGroupReconciler, ctx context.Context
 		for i, target := range group.Spec.Targets {
 			grafanaDatasourceConfig.DatasourceName = fmt.Sprintf("%s-%d", group.Spec.ClusterName, i)
 			grafanaDatasourceConfig.TargetHost = target
-			datasource := grafanaDatasourceConfig.BuildDatasource()
 
-			err := r.Get(ctx, types.NamespacedName{
+			datasource, err := grafanaDatasourceConfig.BuildDatasource()
+			if err != nil {
+				return err
+			}
+
+			err = r.Get(ctx, types.NamespacedName{
 				Name:      grafanaDatasourceConfig.ObjectName,
 				Namespace: grafanaDatasourceConfig.Namespace,
 			}, datasource)

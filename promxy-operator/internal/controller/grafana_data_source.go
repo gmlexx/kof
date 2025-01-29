@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -21,7 +22,16 @@ type GrafanaDatasourceConfig struct {
 	PathPrefix            string
 }
 
-func (in GrafanaDatasourceConfig) BuildDatasource() *grafanav1alpha1.GrafanaDatasource {
+func (in GrafanaDatasourceConfig) BuildDatasource() (*grafanav1alpha1.GrafanaDatasource, error) {
+	secureData := map[string]string{
+		"basicAuthPassword": fmt.Sprintf("${%s}", in.SecretPasswordKey),
+	}
+
+	secureJSON, err := json.Marshal(secureData)
+	if err != nil {
+		return nil, err
+	}
+
 	return &grafanav1alpha1.GrafanaDatasource{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "GrafanaDatasource",
@@ -60,12 +70,14 @@ func (in GrafanaDatasourceConfig) BuildDatasource() *grafanav1alpha1.GrafanaData
 				},
 			},
 			Datasource: &grafanav1alpha1.GrafanaDatasourceInternal{
-				Access:    "proxy",
-				Name:      in.DatasourceName,
-				Type:      "victoriametrics-logs-datasource",
-				URL:       in.buildURL(),
-				IsDefault: boolPtr(false),
-				BasicAuth: boolPtr(true),
+				Access:         "proxy",
+				Name:           in.DatasourceName,
+				Type:           "victoriametrics-logs-datasource",
+				URL:            in.buildURL(),
+				IsDefault:      boolPtr(false),
+				BasicAuth:      boolPtr(true),
+				BasicAuthUser:  fmt.Sprintf("${%s}", in.SecretUsernameKey),
+				SecureJSONData: secureJSON,
 			},
 			GrafanaCommonSpec: grafanav1alpha1.GrafanaCommonSpec{
 				InstanceSelector: &metav1.LabelSelector{
@@ -79,8 +91,7 @@ func (in GrafanaDatasourceConfig) BuildDatasource() *grafanav1alpha1.GrafanaData
 			},
 		},
 		Status: grafanav1alpha1.GrafanaDatasourceStatus{},
-	}
-
+	}, nil
 }
 
 func (in GrafanaDatasourceConfig) buildURL() string {

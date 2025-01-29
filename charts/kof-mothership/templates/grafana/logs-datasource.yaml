@@ -27,6 +27,9 @@ spec:
     type: {{ .type | default "victoriametrics-logs-datasource" }}
     url: {{ .url }}
     basicAuth: true
+    basicAuthUser: {{ printf "${%s}" .Values.auth.username_key }}
+    secureJsonData:
+      basicAuthPassword: {{ printf "${%s}" .Values.auth.password_key }} 
   instanceSelector:
     matchLabels:
       dashboards: grafana
