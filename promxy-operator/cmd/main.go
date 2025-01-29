@@ -36,6 +36,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
 	kofv1alpha1 "github.com/k0rdent/kof/promxy-operator/api/v1alpha1"
+	grafanav1beta1 "github.com/k0rdent/kof/promxy-operator/api/v1alpha1/grafana"
 	"github.com/k0rdent/kof/promxy-operator/internal/controller"
 	// +kubebuilder:scaffold:imports
 )
@@ -49,6 +50,8 @@ func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
 	utilruntime.Must(kofv1alpha1.AddToScheme(scheme))
+
+	utilruntime.Must(grafanav1beta1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
 
