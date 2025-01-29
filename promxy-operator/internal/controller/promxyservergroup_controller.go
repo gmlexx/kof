@@ -90,11 +90,11 @@ func (r *PromxyServerGroupReconciler) Reconcile(ctx context.Context, req ctrl.Re
 	log.Info("Processing promxy server groups", "promxyServerGroupsBySecretName", promxyServerGroupsBySecretName)
 
 	for name, groups := range promxyServerGroupsBySecretName {
-		if err := CreateDashboardSource(r, ctx, req, name, groups, log); err != nil {
+		if err := CreateGrafanaDatasource(r, ctx, req, name, groups, log); err != nil {
 			return ctrl.Result{}, err
 		}
 
-		if err := CreateSecrets(r, ctx, req, name, groups, log); err != nil {
+		if err := CreatePromxyConfigSecrets(r, ctx, req, name, groups, log); err != nil {
 			return ctrl.Result{}, err
 		}
 	}
@@ -109,7 +109,7 @@ func (r *PromxyServerGroupReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func CreateSecrets(r *PromxyServerGroupReconciler, ctx context.Context, req ctrl.Request, name string, groups []*kofv1alpha1.PromxyServerGroup, log logr.Logger) error {
+func CreatePromxyConfigSecrets(r *PromxyServerGroupReconciler, ctx context.Context, req ctrl.Request, name string, groups []*kofv1alpha1.PromxyServerGroup, log logr.Logger) error {
 	secretTemplateData := &PromxyConfig{
 		RemoteWriteUrl: r.RemoteWriteUrl,
 		ServerGroups:   make([]*PromxyConfigServerGroup, 0),
@@ -186,7 +186,7 @@ func CreateSecrets(r *PromxyServerGroupReconciler, ctx context.Context, req ctrl
 	return nil
 }
 
-func CreateDashboardSource(r *PromxyServerGroupReconciler, ctx context.Context, req ctrl.Request, name string, groups []*kofv1alpha1.PromxyServerGroup, log logr.Logger) error {
+func CreateGrafanaDatasource(r *PromxyServerGroupReconciler, ctx context.Context, req ctrl.Request, name string, groups []*kofv1alpha1.PromxyServerGroup, log logr.Logger) error {
 	for _, group := range groups {
 
 		grafanaDatasourceConfig := &GrafanaDatasourceConfig{
