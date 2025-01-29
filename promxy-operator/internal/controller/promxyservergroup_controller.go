@@ -102,12 +102,6 @@ func (r *PromxyServerGroupReconciler) Reconcile(ctx context.Context, req ctrl.Re
 	return ctrl.Result{}, nil
 }
 
-func setSecretOperatorLabels(secret *coreV1.Secret) {
-	secret.Labels = map[string]string{
-		"app.kubernetes.io/managed-by": "promxy-operator",
-	}
-}
-
 // SetupWithManager sets up the controller with the Manager.
 func (r *PromxyServerGroupReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
@@ -155,7 +149,7 @@ func CreateSecrets(r *PromxyServerGroupReconciler, ctx context.Context, req ctrl
 			Name:      name,
 			Namespace: req.Namespace,
 		}
-		setSecretOperatorLabels(secret)
+		setOperatorLabels(&secret.ObjectMeta)
 		secret.StringData = map[string]string{
 			"config.yaml": data,
 		}
@@ -175,7 +169,7 @@ func CreateSecrets(r *PromxyServerGroupReconciler, ctx context.Context, req ctrl
 		log.Error(err, "cannot get promxy secret")
 		return err
 	}
-	setSecretOperatorLabels(secret)
+	setOperatorLabels(&secret.ObjectMeta)
 	secret.StringData = map[string]string{
 		"config.yaml": data,
 	}
@@ -238,4 +232,10 @@ func CreateDashboardSource(r *PromxyServerGroupReconciler, ctx context.Context, 
 	}
 
 	return nil
+}
+
+func setOperatorLabels(obj *metav1.ObjectMeta) {
+	obj.Labels = map[string]string{
+		"app.kubernetes.io/managed-by": "promxy-operator",
+	}
 }
