@@ -43,6 +43,9 @@ victoriametrics:
 grafana:
   enabled: true
   datasources:
+    - name: metrics
+      url: http://vmselect-cluster:8481/select/0/prometheus
+      type: prometheus
     - name: logs
       url: http://kof-storage-victoria-logs-single-server:9428
       type: victoriametrics-logs-datasource
