@@ -115,7 +115,6 @@ dev-ms-deploy-cloud: dev promxy-operator-docker-build ## Deploy Mothership helm 
 	cp -f $(TEMPLATES_DIR)/kof-mothership/values.yaml dev/mothership-values.yaml
 	@$(YQ) eval -i '.kcm.installTemplates = true' dev/mothership-values.yaml
 	@$(YQ) eval -i '.kcm.kof.clusterProfiles.kof-aws-dns-secrets = {"matchLabels": {"k0rdent.mirantis.com/kof-aws-dns-secrets": "true"}, "secrets": ["external-dns-aws-credentials"]}' dev/mothership-values.yaml
-	@$(YQ) eval -i '.grafana.logSources = [{"name": "$(USER)-aws-storage", "url": "https://vmauth.$(STORAGE_DOMAIN)/vls", "type": "victoriametrics-logs-datasource", "auth": {"credentials_secret_name": "storage-vmuser-credentials", "username_key": "username", "password_key": "password"}}]' dev/mothership-values.yaml
 
 	@$(YQ) eval -i '.promxy.operator.image.repository= "promxy-operator-controller"' dev/mothership-values.yaml
 	@if [ "$(REGISTRY_REPO)" = "oci://127.0.0.1:$(REGISTRY_PORT)/charts" ]; then \
