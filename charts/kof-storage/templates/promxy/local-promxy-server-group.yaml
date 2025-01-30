@@ -5,10 +5,10 @@ metadata:
   labels:
     app.kubernetes.io/name: promxy-operator
     k0rdent.mirantis.com/promxy-secret-name: kof-mothership-promxy-config
-  name: promxyservergroup-prometheus-storage
+  name: mothership
   namespace: kof
 spec:
-  cluster_name: prometheus-storage
+  cluster_name: mothership
   targets:
     - "vmselect-cluster.kof:8481"
   path_prefix: "/select/0/prometheus"
