@@ -152,7 +152,7 @@ dev-managed-deploy-cloud: dev ## Deploy Regional Managed cluster using KCM
 	@$(YQ) eval -i '.kof.logs.endpoint = "https://vmauth.$(STORAGE_DOMAIN)/vls/insert/opentelemetry/v1/logs"' dev/kof-managed-values.yaml
 	@$(YQ) eval -i '.kof.metrics.endpoint = "https://vmauth.$(STORAGE_DOMAIN)/vm/insert/0/prometheus/api/v1/write"' dev/kof-managed-values.yaml
 	@$(YQ) eval -i '(.spec.serviceSpec.services[] | select(.name == "kof-collectors")).values |= load_str("dev/kof-managed-values.yaml")' dev/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml
-	# kubectl apply -f dev/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml
+	kubectl apply -f dev/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml
 
 ## Tool Binaries
 KUBECTL ?= kubectl
