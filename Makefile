@@ -139,6 +139,7 @@ dev-storage-deploy-cloud: dev ## Deploy Regional Managed cluster using KCM
 	@$(YQ) eval -i '(select(documentIndex == 0).spec.serviceSpec.services[] | select(.name == "kof-storage")).values |= load_str("dev/kof-storage-values.yaml")' dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
 	@$(YQ) eval -i 'select(documentIndex == 1).spec.targets = ["vmauth.$(STORAGE_DOMAIN):443"]' dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
 	@$(YQ) eval -i 'select(documentIndex == 2).spec.datasource.name =  "$(USER)-$(CLOUD_CLUSTER_TEMPLATE)-storage"' dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
+	@$(YQ) eval -i 'select(documentIndex == 2).spec.datasource.url = "https://vmauth.$(STORAGE_DOMAIN)/vls"' dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
 	kubectl apply -f dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
 
 .PHONY: dev-managed-deploy-cloud
