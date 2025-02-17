@@ -142,6 +142,26 @@ dev-storage-deploy-cloud: dev ## Deploy Regional Managed cluster using KCM
 	@$(YQ) eval -i 'select(documentIndex == 2).spec.datasource.url = "https://vmauth.$(STORAGE_DOMAIN)/vls"' dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
 	kubectl apply -f dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
 
+.PHONY: dev-storage-deploy-istio
+dev-storage-deploy-istio: dev ## Deploy Regional Managed cluster using KCM
+	cp -f demo/cluster/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
+	@$(YQ) eval -i '.metadata.name = "$(USER)-$(CLOUD_CLUSTER_TEMPLATE)-storage"' dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml # set the same name for both documents in yaml
+	@$(YQ) eval -i 'select(documentIndex == 1).spec.cluster_name = "$(USER)-$(CLOUD_CLUSTER_TEMPLATE)-storage"' dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
+	@$(YQ) 'select(documentIndex == 0).spec.serviceSpec.services[] | select(.name == "kof-storage") | .values' dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml > dev/kof-storage-values.yaml
+	@$(YQ) eval -i '.["cert-manager"].email = "$(USER_EMAIL)"' dev/kof-storage-values.yaml
+	@$(YQ) eval -i '(select(documentIndex == 0).spec.serviceSpec.services[] | select(.name == "kof-storage")).values |= load_str("dev/kof-storage-values.yaml")' dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
+	kubectl apply -f dev/$(CLOUD_CLUSTER_TEMPLATE)-storage.yaml
+
+.PHONY: dev-managed-deploy-istio
+dev-managed-deploy-istio: dev ## Deploy Regional Managed cluster using KCM
+	cp -f demo/cluster/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml dev/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml
+	@$(YQ) eval -i 'select(documentIndex == 0) | .metadata.name = "$(MANAGED_CLUSTER_NAME)"' dev/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml
+	@$(YQ) '.spec.serviceSpec.services[] | select(.name == "kof-collectors") | .values' dev/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml > dev/kof-managed-values.yaml
+	@$(YQ) eval -i '.global.clusterName = "$(MANAGED_CLUSTER_NAME)"' dev/kof-managed-values.yaml
+	@$(YQ) eval -i '.opencost.opencost.exporter.defaultClusterId = "$(MANAGED_CLUSTER_NAME)"' dev/kof-managed-values.yaml
+	@$(YQ) eval -i '(.spec.serviceSpec.services[] | select(.name == "kof-collectors")).values |= load_str("dev/kof-managed-values.yaml")' dev/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml
+	kubectl apply -f dev/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml
+
 .PHONY: dev-managed-deploy-cloud
 dev-managed-deploy-cloud: dev ## Deploy Regional Managed cluster using KCM
 	cp -f demo/cluster/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml dev/$(CLOUD_CLUSTER_TEMPLATE)-managed.yaml

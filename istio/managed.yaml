@@ -1,0 +1,6 @@
+global:
+  meshID: kof
+  externalIstiod: true
+  multiCluster:
+    clusterName: alarkov-aws-standalone-istio-managed
+  network: alarkov-aws-standalone-istio-managed-network

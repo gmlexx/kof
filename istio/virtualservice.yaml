@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: kof-storage-victoria-logs-single-server
+  namespace: kof
+spec:
+  hosts:
+    - kof-storage-victoria-logs-single-server.kof.svc.cluster.local
+  gateways:
+    - istio-system/istio-eastwestgateway
+  http:
+    - match:
+        - uri:
+            prefix: "/"
+      route:
+        - destination:
+            host: ratings.prod.svc.cluster.local

@@ -190,6 +190,7 @@ spec:
 
       batch: {}
 
+    
     extensions:
       {{- include "basic_auth_extensions" . | nindent 6 }}
 
