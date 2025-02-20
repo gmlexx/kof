@@ -25,7 +25,7 @@ Install into local clusters these helm charts using Makefile
 
 ```bash
 make dev-operators-deploy
-make dev-ms-deploy-cloud
+make dev-ms-deploy
 make dev-storage-deploy
 make dev-collectors-deploy
 ```
@@ -48,7 +48,7 @@ Install "mothership" helm chart into your "mothership" cluster
 
 
 ```bash
-make dev-ms-deploy-cloud
+make dev-ms-deploy
 ```
 
 Create "storage" managed cluster using KCM

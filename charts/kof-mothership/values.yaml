@@ -32,6 +32,8 @@ kcm:
         create_secrets: true
         secrets:
           - storage-vmuser-credentials
+istio:
+  enabled: false
 victoriametrics:
   enabled: true
   vmcluster:
@@ -139,7 +141,16 @@ promxy:
       requests:
         cpu: 0.02
         memory: 20Mi
-      limits:
-        cpu: 0.02
-        memory: 20Mi
-
+    limits:
+      cpu: 0.02
+      memory: 20Mi
+cert-manager-istio-csr:
+  app:
+    controller:
+      leaderElectionNamespace: kof
+    certmanager:
+      namespace: kof
+      issuer:
+        name: kof-mothership-istio-mothership-ca
+        kind: Issuer
+        group: cert-manager.io
