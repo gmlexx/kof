@@ -144,13 +144,3 @@ promxy:
     limits:
       cpu: 0.02
       memory: 20Mi
-cert-manager-istio-csr:
-  app:
-    controller:
-      leaderElectionNamespace: kof
-    certmanager:
-      namespace: kof
-      issuer:
-        name: kof-mothership-istio-mothership-ca
-        kind: Issuer
-        group: cert-manager.io
