@@ -103,16 +103,23 @@ func (r *ClusterDeploymentReconciler) reconcileChildClusterRole(
 		return err
 	}
 
+	configData := map[string]string{
+		CLUSTER_DEPLOYMENT_GENERATION_KEY: fmt.Sprintf("%d", childClusterDeployment.Generation),
+		REGIONAL_CLUSTER_NAME_KEY:         regionalClusterName,
+	}
+
 	labelName = "k0rdent.mirantis.com/kof-regional-domain"
 	regionalDomain, ok := regionalConfig.ClusterLabels[labelName]
 	if !ok {
-		err := fmt.Errorf("regional domain not found")
-		log.Error(
-			err, "in",
-			"regionalClusterDeployment", regionalClusterName,
-			"clusterLabel", labelName,
-		)
-		return err
+		if _, ok := regionalConfig.ClusterLabels[istioRoleLabel]; !ok {
+			err := fmt.Errorf("regional domain not found")
+			log.Error(
+				err, "in",
+				"regionalClusterDeployment", regionalClusterName,
+				"clusterLabel", labelName,
+			)
+			return err
+		}
 	}
 
 	configMap := &corev1.ConfigMap{
@@ -129,11 +136,7 @@ func (r *ClusterDeploymentReconciler) reconcileChildClusterRole(
 				},
 			},
 		},
-		Data: map[string]string{
-			CLUSTER_DEPLOYMENT_GENERATION_KEY: fmt.Sprintf("%d", childClusterDeployment.Generation),
-			REGIONAL_CLUSTER_NAME_KEY:         regionalClusterName,
-			REGIONAL_DOMAIN_KEY:               regionalDomain,
-		},
+		Data: configData,
 	}
 
 	if err = r.Create(ctx, configMap); err != nil {
