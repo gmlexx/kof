@@ -44,11 +44,15 @@ spec:
         endpoint: {{ .Values.kof.metrics.endpoint }}
         tls:
           insecure: true
+        {{- if .Values.kof.basic_auth }}
         auth:
           authenticator: basicauth/metrics
+        {{- end }}
       otlphttp:
+        {{- if .Values.kof.basic_auth }}
         auth:
           authenticator: basicauth/logs
+        {{- end }}
         logs_endpoint: {{ .Values.kof.logs.endpoint }}
 
     {{- if .Values.kof.basic_auth }}
