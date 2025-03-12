@@ -20,3 +20,5 @@ spec:
     workersNumber: 3
     clusterLabels:
       k0rdent.mirantis.com/istio-role: child
+      k0rdent.mirantis.com/kof-cluster-role: child
+      k0rdent.mirantis.com/kof-regional-cluster-name: aws-ue2
