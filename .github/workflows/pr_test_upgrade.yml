@@ -22,6 +22,14 @@ jobs:
     name: Upgrade KCM and KOF
     runs-on: ubuntu-latest
     steps:
+      - name: Free up disk space
+        run: |
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+          sudo rm -rf /tmp/*
+          sudo rm -rf /var/tmp/*
+          sudo docker image prune --all --force || true
+
       - id: kof_release
         uses: pozetroninc/github-action-get-latest-release@master
         with:
