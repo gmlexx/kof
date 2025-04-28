@@ -140,6 +140,9 @@ func main() {
 	httpServer := server.NewServer(httpServerAddr, &httpServerLog)
 	httpServer.Use(server.RecoveryMiddleware)
 	httpServer.Use(server.LoggingMiddleware)
+	httpServer.Router.GET("/*", handlers.ReactAppHandler)
+	httpServer.Router.GET("/assets/*", handlers.ReactAppHandler)
+	httpServer.Router.GET("/api/test", handlers.PrometheusJobsHandler)
 	httpServer.Router.NotFound(handlers.NotFoundHandler)
 	setupLog.Info(fmt.Sprintf("Starting http server on %s", httpServerAddr))
 	var wg sync.WaitGroup
