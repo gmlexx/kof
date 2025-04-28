@@ -2,9 +2,10 @@ package server
 
 import (
 	"context"
-	"github.com/go-logr/logr"
 	"net/http"
 	"time"
+
+	"github.com/go-logr/logr"
 )
 
 type Server struct {
