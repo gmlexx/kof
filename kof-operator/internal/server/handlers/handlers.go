@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"io/fs"
@@ -31,11 +30,11 @@ func ReactAppHandler(res *server.Response, req *http.Request) {
 func PrometheusJobsHandler(res *server.Response, req *http.Request) {
 	client, err := k8s.NewClient()
 	if err != nil {
-		res.Fail(fmt.Sprintf("failed to create client:", err), http.StatusInternalServerError)
+		res.Fail(fmt.Sprintf("failed to create client: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	ctx := context.TODO()
+	ctx := req.Context()
 
 	secretList, err := k8s.GetRemoteSecrets(ctx, client)
 	if err != nil {
