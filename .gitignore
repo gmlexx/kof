@@ -2,3 +2,5 @@ charts/*/charts
 bin
 dev
 external-dns-aws-credentials
+kof-operator/webapp/collector/dist
+kof-operator/webapp/collector/node_modules
