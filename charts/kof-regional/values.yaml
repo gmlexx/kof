@@ -2,7 +2,7 @@ cert-manager:
   enabled: true
 
 ingress-nginx:
-  enabled: true
+  enabled: false
 
 collectors: {}
 storage: {}
