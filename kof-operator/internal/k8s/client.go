@@ -1,10 +1,21 @@
 package k8s
 
 import (
+	kcmv1alpha1 "github.com/K0rdent/kcm/api/v1alpha1"
+	"k8s.io/apimachinery/pkg/runtime"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/kubernetes"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/clientcmd"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+var scheme = runtime.NewScheme()
+
+func init() {
+	utilruntime.Must(kcmv1alpha1.AddToScheme(scheme))
+	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
+}
 
 type KubeClient struct {
 	Client    client.Client
@@ -41,7 +52,9 @@ func newKubeClient(config clientcmd.ClientConfig) (*KubeClient, error) {
 		return nil, err
 	}
 
-	client, err := client.New(restConfig, client.Options{})
+	client, err := client.New(restConfig, client.Options{
+		Scheme: scheme,
+	})
 	if err != nil {
 		return nil, err
 	}

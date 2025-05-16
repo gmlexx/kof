@@ -52,7 +52,6 @@ import (
 
 	sveltosv1beta1 "github.com/projectsveltos/addon-controller/api/v1beta1"
 
-	// +kubebuilder:scaffold:imports
 	kcmv1alpha1 "github.com/K0rdent/kcm/api/v1alpha1"
 )
 
@@ -79,6 +78,7 @@ func main() {
 	var probeAddr string
 	var secureMetrics bool
 	var enableHTTP2 bool
+	var runController bool
 	var remoteWriteUrl string
 	var promxyReloadEnpoint string
 	var httpServerAddr string
@@ -99,6 +99,7 @@ func main() {
 		"http://localhost:8082/-/reload",
 		"The promxy config reload endpoint",
 	)
+	flag.BoolVar(&runController, "run-controller", true, "Run controller manager")
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
@@ -237,10 +238,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	setupLog.Info("starting manager")
-	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
-		setupLog.Error(err, "problem running manager")
-		os.Exit(1)
+	if runController {
+		setupLog.Info("starting manager")
+		if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
+			setupLog.Error(err, "problem running manager")
+			os.Exit(1)
+		}
+	} else {
+		wg.Wait()
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

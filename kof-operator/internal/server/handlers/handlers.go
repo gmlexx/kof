@@ -15,7 +15,6 @@ import (
 	"github.com/k0rdent/kof/kof-operator/internal/models/target"
 	"github.com/k0rdent/kof/kof-operator/internal/server"
 	static "github.com/k0rdent/kof/kof-operator/webapp/collector"
-	corev1 "k8s.io/api/core/v1"
 )
 
 var handlerMutex sync.Mutex
@@ -51,35 +50,36 @@ func PrometheusHandler(res *server.Response, req *http.Request) {
 		log.Printf("failed to get cluster deployments: %v", err)
 	}
 
-	secrets := make([]*corev1.Secret, 0, len(cdList.Items))
+	clusters := make([]*k8s.Cluster, 0, len(cdList.Items))
 	for _, cd := range cdList.Items {
-		secretName := fmt.Sprintf("%s-kubeconfig", cd.Name)
+		secretName := fmt.Sprintf("%s-kubeconf", cd.Name)
 		secret, err := k8s.GetKubeconfigSecret(ctx, kubeClient.Client, secretName, cd.Namespace)
 		if err != nil {
 			log.Printf("failed to get secret: %v", err)
 			return
 		}
 
-		secrets = append(secrets, secret)
+		clusters = append(clusters, &k8s.Cluster{
+			Name:   cd.Name,
+			Secret: secret,
+		})
 	}
 
-	localTargets, err := k8s.CollectPrometheusTargets(ctx, kubeClient)
+	localTargets, err := k8s.CollectPrometheusTargets(ctx, kubeClient, "mothership")
 	if err != nil {
 		log.Println("failed to collect prometheus target: ", err)
 	}
 
 	targets.Merge(localTargets)
 
-	kubeconfigs := k8s.GetKubeconfigFromSecretList(secrets)
-
-	for _, kubeconfig := range kubeconfigs {
-		client, err := k8s.NewKubeClientFromKubeconfig(kubeconfig)
+	for _, cluster := range clusters {
+		client, err := k8s.NewKubeClientFromKubeconfig(cluster.GetKubeconfig())
 		if err != nil {
 			log.Println("failed to create client:", err)
 			continue
 		}
 
-		newTargets, err := k8s.CollectPrometheusTargets(ctx, client)
+		newTargets, err := k8s.CollectPrometheusTargets(ctx, client, cluster.Name)
 		if err != nil {
 			log.Println("failed to collect prometheus target: ", err)
 			continue

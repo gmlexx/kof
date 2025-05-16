@@ -15,23 +15,18 @@ const (
 	PrometheusEndpoint = "api/v1/targets"
 )
 
-func CollectPrometheusTargets(ctx context.Context, kubeClient *KubeClient) (*target.PrometheusTargets, error) {
+func CollectPrometheusTargets(ctx context.Context, kubeClient *KubeClient, clusterName string) (*target.PrometheusTargets, error) {
 	response := &target.PrometheusTargets{}
-
-	clusterName, err := kubeClient.GetClusterName(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get cluster name: %v", err)
-	}
 
 	podList, err := GetCollectorPods(ctx, kubeClient.Client)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list pods: %v", err)
+		return response, fmt.Errorf("failed to list pods: %v", err)
 	}
 
 	for _, pod := range podList.Items {
 		byteResponse, err := Proxy(ctx, kubeClient.Clientset, pod, PrometheusPort, PrometheusEndpoint)
 		if err != nil {
-			log.Printf("failed to connect to the pod '%s': %v", pod.Name, err)
+			log.Printf("failed to connect to the pod '%s': %v, %s", pod.Name, err, string(byteResponse))
 			continue
 		}
 

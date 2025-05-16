@@ -12,5 +12,5 @@ func GetClusterDeployments(ctx context.Context, client client.Client) (*kcmv1alp
 	if err := client.List(ctx, cdList); err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return cdList, nil
 }

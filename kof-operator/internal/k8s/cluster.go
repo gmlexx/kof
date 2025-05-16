@@ -1,18 +1,18 @@
 package k8s
 
 import (
-	"context"
-	"fmt"
+	corev1 "k8s.io/api/core/v1"
 )
 
-func (c *KubeClient) GetClusterName(ctx context.Context) (string, error) {
-	rawConfig, err := c.Config.RawConfig()
-	if err != nil {
-		return "", fmt.Errorf("failed to get raw config: %v", err)
+type Cluster struct {
+	Name   string
+	Secret *corev1.Secret
+}
+
+func (c *Cluster) GetKubeconfig() []byte {
+	kubeconfig, ok := c.Secret.Data["value"]
+	if !ok {
+		return []byte{}
 	}
-
-	currentContext := rawConfig.CurrentContext
-	clusterName := rawConfig.Contexts[currentContext].Cluster
-
-	return clusterName, nil
+	return kubeconfig
 }
