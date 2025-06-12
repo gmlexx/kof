@@ -5,3 +5,5 @@ kcm:
   namespace: kcm-system
 
 collectors: {}
+
+test: 1
