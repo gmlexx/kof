@@ -7,3 +7,4 @@ kcm:
 
 collectors: {}
 operators: {}
+test: {}
