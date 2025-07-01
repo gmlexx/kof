@@ -2,6 +2,10 @@ version: 2
 
 project_name: kof-operator-controller
 
+before:
+  hooks:
+    - go -C ./kof-operator mod tidy
+
 builds:
   - id: amd64
     env:
@@ -13,7 +17,7 @@ builds:
       - amd64
     flags:
       - -trimpath
-    main: ./kof-operator/cmd/main.go
+    main: ./kof-operator/cmd/
     binary: kof-operator
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
@@ -40,7 +44,7 @@ builds:
       - "7"
     flags:
       - -trimpath
-    main: ./kof-operator/cmd/main.go
+    main: ./kof-operator/cmd/
     binary: kof-operator
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
