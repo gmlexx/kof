@@ -7,59 +7,59 @@ before:
     - sh -c 'cd kof-operator && go mod tidy'
     - sh -c 'cd kof-operator && make build-web-app' 
 
-# builds:
-#   - id: amd64
-#     env:
-#       - CGO_ENABLED=0
-#       - GO111MODULE=on
-#     goos:
-#       - linux
-#     goarch:
-#       - amd64
-#     flags:
-#       - -trimpath
-#     main: ./cmd/main.go
-#     dir: kof-operator
-#     binary: kof-operator
-#     mod_timestamp: "{{ .CommitTimestamp }}"
-#     ldflags:
-#       - -s -w
-#       # - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
-#       # - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
-#       # - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
-#       # - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
-#       # - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
-#     tags:
-#       - netgo
-#     builder: go
+builds:
+  - id: amd64
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    goos:
+      - linux
+    goarch:
+      - amd64
+    flags:
+      - -trimpath
+    main: ./cmd/main.go
+    dir: kof-operator
+    binary: kof-operator
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - -s -w
+      # - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
+      # - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
+      # - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
+      # - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
+      # - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
+    tags:
+      - netgo
+    builder: go
 
-#   - id: arm_and_arm64
-#     env:
-#       - CGO_ENABLED=0
-#       - GO111MODULE=on
-#     goos:
-#       - linux
-#     goarch:
-#       - arm
-#       - arm64
-#     goarm:
-#       - "7"
-#     flags:
-#       - -trimpath
-#     dir: kof-operator
-#     main: ./cmd/main.go
-#     binary: kof-operator
-#     mod_timestamp: "{{ .CommitTimestamp }}"
-#     ldflags:
-#       - -s -w
-#       # - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
-#       # - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
-#       # - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
-#       # - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
-#       # - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
-#     tags:
-#       - netgo
-#     builder: go
+  - id: arm_and_arm64
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    goos:
+      - linux
+    goarch:
+      - arm
+      - arm64
+    goarm:
+      - "7"
+    flags:
+      - -trimpath
+    dir: kof-operator
+    main: ./cmd/main.go
+    binary: kof-operator
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - -s -w
+      # - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
+      # - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
+      # - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
+      # - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
+      # - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
+    tags:
+      - netgo
+    builder: go
 
 dockers:
   - id: linux-amd64
