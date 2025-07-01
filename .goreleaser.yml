@@ -5,7 +5,8 @@ project_name: kof-operator-controller
 before:
   hooks:
     - sh -c 'cd kof-operator && go mod tidy'
-    - sh -c 'cd kof-operator && make build-web-app' 
+    - npm --prefix ./kof-operator/webapp/collector i
+    - npm --prefix ./kof-operator/webapp/collector run build
 
 builds:
   - id: amd64
