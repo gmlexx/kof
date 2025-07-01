@@ -68,7 +68,7 @@ dockers:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}"
       - "{{ .Env.IMAGE_REPO }}:latest"
     skip_push: false
-    # dockerfile: "Dockerfile"
+    dockerfile: "./kof-operator/Dockerfile"
     use: buildx
     ids:
       - amd64
@@ -92,7 +92,7 @@ dockers:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-arm64v8"
       - "{{ .Env.IMAGE_REPO }}:latest-arm64v8"
     skip_push: false
-    # dockerfile: "Dockerfile"
+    dockerfile: "./kof-operator/Dockerfile"
     use: buildx
     ids:
       - arm_and_arm64
@@ -117,7 +117,7 @@ dockers:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-armv7"
       - "{{ .Env.IMAGE_REPO }}:latest-armv7"
     skip_push: false
-    # dockerfile: "Dockerfile"
+    dockerfile: "./kof-operator/Dockerfile"
     use: buildx
     ids:
       - arm_and_arm64
