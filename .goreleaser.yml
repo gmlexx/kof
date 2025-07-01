@@ -4,7 +4,7 @@ project_name: kof-operator-controller
 
 before:
   hooks:
-    - (cd kof-operator && go mod tidy)
+    - sh -c 'cd kof-operator && go mod tidy'
 
 builds:
   - id: amd64
