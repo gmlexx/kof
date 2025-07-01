@@ -1,0 +1,28 @@
+project_name: kof-operator-controller
+
+builds:
+  - main: ./kof-operator/cmd/main.go
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags: "-s -w"
+    binary: kof-operator
+
+dockers:
+  - image_templates:
+      - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}"
+      - "{{ .Env.IMAGE_REPO }}:latest"
+    dockerfile: ./kof-operator/Dockerfile
+    goos: linux
+    goarch:
+      - amd64
+      - arm64
+
+release:
+  github:
+    # owner: k0rdent
+    owner: AndrejsPon00
+    name: kof
+
