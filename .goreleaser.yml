@@ -4,7 +4,9 @@ project_name: kof-operator-controller
 
 before:
   hooks:
-    - go mod tidy
+    pre:
+      - cmd: go mod tidy
+        dir: kof-operator
 
 builds:
   - id: amd64
@@ -18,6 +20,7 @@ builds:
     flags:
       - -trimpath
     main: ./cmd/main.go
+    dir: kof-operator
     binary: kof-operator
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
@@ -44,6 +47,7 @@ builds:
       - "7"
     flags:
       - -trimpath
+    dir: kof-operator
     main: ./cmd/main.go
     binary: kof-operator
     mod_timestamp: "{{ .CommitTimestamp }}"

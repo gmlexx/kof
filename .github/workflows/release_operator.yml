@@ -69,4 +69,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_REPO: ${{ env.IMAGE_REPO }}
           VERSION: ${{ steps.vars.outputs.version }}
-        working-directory: ./kof-operator
