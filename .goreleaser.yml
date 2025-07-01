@@ -17,7 +17,7 @@ builds:
       - amd64
     flags:
       - -trimpath
-    main: ./kof-operator/cmd/
+    main: ./kof-operator/cmd/main.go
     binary: kof-operator
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
@@ -44,7 +44,7 @@ builds:
       - "7"
     flags:
       - -trimpath
-    main: ./kof-operator/cmd/
+    main: ./kof-operator/cmd/main.go
     binary: kof-operator
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
