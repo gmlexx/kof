@@ -60,6 +60,7 @@ jobs:
           GIT_VERSION=$(git describe --tags --always)
           echo "version=${GIT_VERSION}" >> $GITHUB_OUTPUT
       - name: Build and push
+        working-directory: ./kof-operator
         uses: goreleaser/goreleaser-action@v6
         # if: github.repository == 'k0rdent/kof'
         with:

@@ -4,7 +4,7 @@ project_name: kof-operator-controller
 
 before:
   hooks:
-    - go -C ./kof-operator mod tidy
+    - go mod tidy
 
 builds:
   - id: amd64
@@ -17,7 +17,7 @@ builds:
       - amd64
     flags:
       - -trimpath
-    main: ./kof-operator/cmd/main.go
+    main: ./cmd/main.go
     binary: kof-operator
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
@@ -44,7 +44,7 @@ builds:
       - "7"
     flags:
       - -trimpath
-    main: ./kof-operator/cmd/main.go
+    main: ./cmd/main.go
     binary: kof-operator
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
@@ -66,7 +66,7 @@ dockers:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}"
       - "{{ .Env.IMAGE_REPO }}:latest"
     skip_push: false
-    dockerfile: "./kof-operator/Dockerfile"
+    dockerfile: "Dockerfile"
     use: buildx
     ids:
       - amd64
@@ -88,7 +88,7 @@ dockers:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-arm64v8"
       - "{{ .Env.IMAGE_REPO }}:latest-arm64v8"
     skip_push: false
-    dockerfile: "./kof-operator/Dockerfile"
+    dockerfile: "Dockerfile"
     use: buildx
     ids:
       - arm_and_arm64
@@ -111,7 +111,7 @@ dockers:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-armv7"
       - "{{ .Env.IMAGE_REPO }}:latest-armv7"
     skip_push: false
-    dockerfile: "./kof-operator/Dockerfile"
+    dockerfile: "Dockerfile"
     use: buildx
     ids:
       - arm_and_arm64
