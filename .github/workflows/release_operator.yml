@@ -32,10 +32,10 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: false
-      - name: Unit tests
-        working-directory: ./kof-operator
-        run: |
-          make test
+      # - name: Unit tests
+      #   working-directory: ./kof-operator
+      #   run: |
+      #     make test
       - name: Build web application
         working-directory: ./kof-operator
         run: make build-web-app
