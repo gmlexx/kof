@@ -25,11 +25,6 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w
-      # - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
-      # - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
-      # - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
-      # - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
-      # - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
     tags:
       - netgo
     builder: go
@@ -53,11 +48,6 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w
-      # - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
-      # - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
-      # - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
-      # - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
-      # - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
     tags:
       - netgo
     builder: go
@@ -70,7 +60,7 @@ dockers:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}"
       - "{{ .Env.IMAGE_REPO }}:latest"
     skip_push: false
-    dockerfile: "./kof-operator/Dockerfile"
+    dockerfile: "./kof-operator/goreleaser.dockerfile"
     use: buildx
     ids:
       - amd64
@@ -94,7 +84,7 @@ dockers:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-arm64v8"
       - "{{ .Env.IMAGE_REPO }}:latest-arm64v8"
     skip_push: false
-    dockerfile: "./kof-operator/Dockerfile"
+    dockerfile: "./kof-operator/goreleaser.dockerfile"
     use: buildx
     ids:
       - arm_and_arm64
@@ -119,7 +109,7 @@ dockers:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-armv7"
       - "{{ .Env.IMAGE_REPO }}:latest-armv7"
     skip_push: false
-    dockerfile: "./kof-operator/Dockerfile"
+    dockerfile: "./kof-operator/goreleaser.dockerfile"
     use: buildx
     ids:
       - arm_and_arm64
