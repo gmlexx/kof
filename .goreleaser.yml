@@ -3,25 +3,145 @@ version: 2
 project_name: kof-operator-controller
 
 builds:
-  - main: ./kof-operator/cmd/main.go
+  - id: amd64
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
     goos:
       - linux
     goarch:
       - amd64
-      - arm64
+    flags:
+      - -trimpath
+    main: ./kof-operator/cmd/main.go
+    binary: kof-operator
+    mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w
+      - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
+      - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
+      - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
+      - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
+      - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
+    tags:
+      - netgo
+    builder: go
+
+  - id: arm_and_arm64
+    env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    goos:
+      - linux
+    goarch:
+      - arm
+      - arm64
+    goarm:
+      - "7"
+    flags:
+      - -trimpath
+    main: ./kof-operator/cmd/main.go
     binary: kof-operator
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - -s -w
+      - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
+      - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
+      - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
+      - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
+      - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
+    tags:
+      - netgo
+    builder: go
 
 dockers:
-  - image_templates:
+  - id: linux-amd64
+    goos: linux
+    goarch: amd64
+    image_templates:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}"
       - "{{ .Env.IMAGE_REPO }}:latest"
-    dockerfile: ./kof-operator/Dockerfile
-    goos: linux
-    goarch:
+    skip_push: false
+    dockerfile: "./kof-operator/Dockerfile"
+    use: buildx
+    ids:
       - amd64
-      - arm64
+    build_flag_templates:
+      - --label=org.opencontainers.image.title="{{ .ProjectName }} - k0rdent Observability and FinOps"
+      - --label=org.opencontainers.image.description="Image with k0rdent Observability and FinOps binary"
+      - --label=org.opencontainers.image.url=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.source=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.version={{ .Env.VERSION }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=Apache-2.0
+      - --platform=linux/amd64
+
+  - id: linux-arm64
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-arm64v8"
+      - "{{ .Env.IMAGE_REPO }}:latest-arm64v8"
+    skip_push: false
+    dockerfile: "./kof-operator/Dockerfile"
+    use: buildx
+    ids:
+      - arm_and_arm64
+    build_flag_templates:
+      - --label=org.opencontainers.image.title="{{ .ProjectName }} - k0rdent Observability and FinOps"
+      - --label=org.opencontainers.image.description="Image with k0rdent Observability and FinOps binary"
+      - --label=org.opencontainers.image.url=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.source=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.version={{ .Env.VERSION }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=Apache-2.0
+      - --platform=linux/arm64/v8
+  
+  - id: linux-armv7
+    goos: linux
+    goarch: arm
+    goarm: "7"
+    image_templates:
+      - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-armv7"
+      - "{{ .Env.IMAGE_REPO }}:latest-armv7"
+    skip_push: false
+    dockerfile: "./kof-operator/Dockerfile"
+    use: buildx
+    ids:
+      - arm_and_arm64
+    build_flag_templates:
+      - --label=org.opencontainers.image.title="{{ .ProjectName }} - k0rdent Cluster Manager"
+      - --label=org.opencontainers.image.description="Image with k0rdent Cluster and State Management binary"
+      - --label=org.opencontainers.image.url=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.source=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.version={{ .Env.VERSION }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=Apache-2.0
+      - --platform=linux/arm/v7
+
+
+  # - main: ./kof-operator/cmd/main.go
+  #   goos:
+  #     - linux
+  #   goarch:
+  #     - amd64
+  #     - arm64
+  #   ldflags:
+  #     - -s -w
+  #   binary: kof-operator
+
+# dockers:
+#   - image_templates:
+#       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}"
+#       - "{{ .Env.IMAGE_REPO }}:latest"
+#     dockerfile: ./kof-operator/Dockerfile
+#     goos: linux
+#     goarch:
+#       - amd64
+#       - arm64
 
 release:
   github:
