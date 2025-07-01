@@ -19,7 +19,7 @@ builds:
       - -trimpath
     main: ./cmd/main.go
     dir: kof-operator
-    binary: kof-operator
+    binary: bin/manager
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w
@@ -42,7 +42,7 @@ builds:
       - -trimpath
     dir: kof-operator
     main: ./cmd/main.go
-    binary: kof-operator
+    binary: bin/manager
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w
