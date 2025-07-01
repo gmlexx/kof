@@ -18,11 +18,11 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w
-      - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
-      - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
-      - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
-      - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
-      - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
+      # - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
+      # - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
+      # - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
+      # - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
+      # - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
     tags:
       - netgo
     builder: go
@@ -45,11 +45,11 @@ builds:
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w
-      - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
-      - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
-      - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
-      - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
-      - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
+      # - -X github.com/K0rdent/kcm/internal/build.Name={{ .ProjectName }}
+      # - -X github.com/K0rdent/kcm/internal/build.Commit={{ .Commit }}
+      # - -X github.com/K0rdent/kcm/internal/build.Time={{ .CommitDate }}
+      # - -X github.com/K0rdent/kcm/internal/build.Version={{ .Env.VERSION }}
+      # - -X github.com/K0rdent/kcm/internal/telemetry.segmentToken={{ envOrDefault "SEGMENT_TOKEN" "" }}
     tags:
       - netgo
     builder: go

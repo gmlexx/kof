@@ -36,6 +36,11 @@ jobs:
       #   working-directory: ./kof-operator
       #   run: |
       #     make test
+      - name: Install Dependencies
+        working-directory: ./kof-operator
+        run: |
+          go mod tidy
+          go mod download
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build web application
