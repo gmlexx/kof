@@ -1,0 +1,96 @@
+default_build_config: &default-build-config
+  env:
+    - CGO_ENABLED=0
+  goos:
+    - linux
+  flags:
+    - -trimpath
+  main: ./cmd/main.go
+  dir: kof-operator
+  binary: bin/manager
+  mod_timestamp: "{{ .CommitTimestamp }}"
+  ldflags:
+    - -s -w
+  tags:
+    - netgo
+  builder: go
+
+default_dockers_config: &default-dockers-config
+  goos: linux
+  skip_push: false
+  dockerfile: "./kof-operator/goreleaser.dockerfile"
+  use: buildx
+
+version: 2
+
+project_name: kof-operator
+
+builds:
+  - id: amd64
+    goarch:
+      - amd64
+    <<: *default-build-config
+
+  - id: arm64
+    goarch:
+      - arm64
+    <<: *default-build-config
+
+dockers:
+  - id: linux-amd64
+    goarch: amd64
+    image_templates:
+      - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-amd64"
+      - "{{ .Env.IMAGE_REPO }}:latest-amd64"
+    ids:
+      - amd64
+    build_flag_templates:
+      - --label=org.opencontainers.image.title="{{ .ProjectName }} - k0rdent Observability and FinOps"
+      - --label=org.opencontainers.image.description="Image with k0rdent Observability and FinOps binary"
+      - --label=org.opencontainers.image.url=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.source=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.version={{ .Env.VERSION }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=Apache-2.0
+      - --platform=linux/amd64
+    <<: *default-dockers-config
+
+  - id: linux-arm64
+    goarch: arm64
+    image_templates:
+      - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-arm64"
+      - "{{ .Env.IMAGE_REPO }}:latest-arm64"
+    ids:
+      - arm64
+    build_flag_templates:
+      - --label=org.opencontainers.image.title="{{ .ProjectName }} - k0rdent Observability and FinOps"
+      - --label=org.opencontainers.image.description="Image with k0rdent Observability and FinOps binary"
+      - --label=org.opencontainers.image.url=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.source=https://github.com/k0rdent/kof
+      - --label=org.opencontainers.image.version={{ .Env.VERSION }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=Apache-2.0
+      - --platform=linux/arm64/v8
+    <<: *default-dockers-config
+
+docker_manifests:
+  - name_template: "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}"
+    image_templates:
+      - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-amd64"
+      - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-arm64"
+    skip_push: false
+    use: docker
+
+  - name_template: "{{ .Env.IMAGE_REPO }}:latest"
+    image_templates:
+      - "{{ .Env.IMAGE_REPO }}:latest-amd64"
+      - "{{ .Env.IMAGE_REPO }}:latest-arm64"
+    skip_push: false
+    use: docker
+
+release:
+  github:
+    owner: k0rdent
+    name: kof
