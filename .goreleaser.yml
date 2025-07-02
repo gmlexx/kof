@@ -1,56 +1,47 @@
+default_build_config: &default-build-config
+  env:
+    - CGO_ENABLED=0
+  goos:
+    - linux
+  flags:
+    - -trimpath
+  main: ./cmd/main.go
+  dir: kof-operator
+  binary: bin/manager
+  mod_timestamp: "{{ .CommitTimestamp }}"
+  ldflags:
+    - -s -w
+  tags:
+    - netgo
+  builder: go
+
+default_dockers_config: &default-dockers-config
+  goos: linux
+  skip_push: false
+  dockerfile: "./kof-operator/goreleaser.dockerfile"
+  use: buildx
+
 version: 2
 
 project_name: kof-operator
 
 builds:
   - id: amd64
-    env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
     goarch:
       - amd64
-    flags:
-      - -trimpath
-    main: ./cmd/main.go
-    dir: kof-operator
-    binary: bin/manager
-    mod_timestamp: "{{ .CommitTimestamp }}"
-    ldflags:
-      - -s -w
-    tags:
-      - netgo
-    builder: go
+    <<: *default-build-config
 
   - id: arm64
-    env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
     goarch:
       - arm64
-    flags:
-      - -trimpath
-    dir: kof-operator
-    main: ./cmd/main.go
-    binary: bin/manager
-    mod_timestamp: "{{ .CommitTimestamp }}"
-    ldflags:
-      - -s -w
-    tags:
-      - netgo
-    builder: go
+    <<: *default-build-config
 
 dockers:
   - id: linux-amd64
-    goos: linux
     goarch: amd64
     image_templates:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-amd64"
       - "{{ .Env.IMAGE_REPO }}:latest-amd64"
-    skip_push: false
-    dockerfile: "./kof-operator/goreleaser.dockerfile"
-    use: buildx
     ids:
       - amd64
     build_flag_templates:
@@ -63,16 +54,13 @@ dockers:
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.licenses=Apache-2.0
       - --platform=linux/amd64
+    <<: *default-dockers-config
 
   - id: linux-arm64
-    goos: linux
     goarch: arm64
     image_templates:
       - "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}-arm64"
       - "{{ .Env.IMAGE_REPO }}:latest-arm64"
-    skip_push: false
-    dockerfile: "./kof-operator/goreleaser.dockerfile"
-    use: buildx
     ids:
       - arm64
     build_flag_templates:
@@ -85,6 +73,7 @@ dockers:
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.licenses=Apache-2.0
       - --platform=linux/arm64/v8
+    <<: *default-dockers-config
 
 docker_manifests:
   - name_template: "{{ .Env.IMAGE_REPO }}:{{ .Env.VERSION }}"
@@ -105,4 +94,3 @@ release:
   github:
     owner: k0rdent
     name: kof
-
