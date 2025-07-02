@@ -8,7 +8,7 @@ on:
 
 env:
   GO_VERSION: "1.24"
-  IMAGE_REPO: "ghcr.io/k0rdent/kof/kof-operator-controller"
+  IMAGE_REPO: "ghcr.io/AndrejsPon00/kof/kof-operator-controller"
 
 jobs:
   build:
@@ -56,7 +56,7 @@ jobs:
           echo "version=${GIT_VERSION}" >> $GITHUB_OUTPUT
       - name: Build and push
         uses: goreleaser/goreleaser-action@v6
-        if: github.repository == 'k0rdent/kof'
+        # if: github.repository == 'k0rdent/kof'
         with:
           version: '~> v2'
           args: release --clean --verbose

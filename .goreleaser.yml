@@ -92,5 +92,5 @@ docker_manifests:
 
 release:
   github:
-    owner: k0rdent
+    owner: AndrejsPon00
     name: kof
