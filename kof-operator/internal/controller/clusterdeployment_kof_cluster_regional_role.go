@@ -69,6 +69,11 @@ func NewRegionalClusterRole(ctx context.Context, cd *kcmv1beta1.ClusterDeploymen
 }
 
 func (r *RegionalClusterRole) Reconcile() error {
+
+	if err := r.CreateOrUpdateRegionalConfigMap(); err != nil {
+		return fmt.Errorf("failed to create or update regional cluster ConfigMap: %v", err)
+	}
+
 	if err := r.CreateVmRulesConfigMap(); err != nil {
 		return fmt.Errorf("failed to create vm rules ConfigMap: %v", err)
 	}
@@ -105,6 +110,50 @@ func (r *RegionalClusterRole) CreateVmRulesConfigMap() error {
 	return utils.CreateIfNotExists(r.ctx, r.client, vmRulesConfigMap, "VMRulesConfigMap", []any{
 		"configMapName", vmRulesConfigMap.Name,
 	})
+}
+
+func (r *RegionalClusterRole) CreateOrUpdateRegionalConfigMap() error {
+	configData, err := r.GetConfigData()
+	if err != nil {
+		return fmt.Errorf("failed to get config data: %v", err)
+	}
+
+	cm := &corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:            r.GetRegionalClusterConfigMapName(),
+			Namespace:       r.clusterDeployment.Namespace,
+			OwnerReferences: []metav1.OwnerReference{r.ownerReference},
+			Labels:          map[string]string{utils.ManagedByLabel: utils.ManagedByValue},
+		},
+		Data: configData,
+	}
+	operation := "Create"
+	if err = r.client.Create(r.ctx, cm); err != nil && errors.IsAlreadyExists(err) {
+		err = r.client.Update(r.ctx, cm)
+		operation = "Update"
+	}
+	eventName := "RegionalClusterConfigMap" + operation
+	if err != nil {
+		utils.LogEvent(
+			r.ctx,
+			eventName+"Failed",
+			"Failed to "+operation+" RegionalClusterConfigMap",
+			r.clusterDeployment,
+			err,
+			"configMap", cm.Name,
+		)
+		return err
+	}
+	utils.LogEvent(
+		r.ctx,
+		eventName,
+		fmt.Sprintf("%sd RegionalClusterConfigMap", operation),
+		r.clusterDeployment,
+		nil,
+		"configMap", cm.Name,
+	)
+
+	return nil
 }
 
 func (r *RegionalClusterRole) UpdateChildConfigMap() error {
@@ -603,6 +652,10 @@ func (r *RegionalClusterRole) httpClientConfigToRawJSON(httpClientConfig *kofv1b
 	return json.RawMessage(
 		fmt.Sprintf(`{"tlsSkipVerify": %t, "timeout": "%d"}`, httpClientConfig.TLSConfig.InsecureSkipVerify, int(httpClientConfig.DialTimeout.Duration.Seconds())),
 	)
+}
+
+func (r *RegionalClusterRole) GetRegionalClusterConfigMapName() string {
+	return "kof-" + r.clusterName
 }
 
 func (r *RegionalClusterRole) GetPromxyServerGroupName() string {
