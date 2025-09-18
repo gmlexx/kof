@@ -77,4 +77,7 @@ gateway:
   enabled: false
   name: istio-eastwestgateway
 storage: {}
-collectors: {}
+collectors:
+  opentelemetry-kube-stack:
+    cleanupJob:
+      enabled: false
