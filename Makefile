@@ -244,7 +244,7 @@ dev-child-deploy-adopted: dev ## Deploy regional adopted cluster using k0rdent
 	$(KUBECTL) apply -f dev/adopted-cluster-child.yaml
 	./scripts/wait-helm-charts.bash $(HELM) $(YQ) kind-child-adopted "cert-manager kof-operators kof-collectors"
 
-	.PHONY: dev-istio-child-deploy-adopted
+.PHONY: dev-istio-child-deploy-adopted
 dev-istio-child-deploy-adopted: dev ## Deploy regional adopted cluster using k0rdent
 		cp -f demo/cluster/adopted-cluster-istio-child.yaml dev/adopted-cluster-istio-child.yaml
 		$(KUBECTL) apply -f dev/adopted-cluster-istio-child.yaml

@@ -1,4 +1,4 @@
-name: Test Release Upgrade
+name: Test Adopted Clusters Upgrade
 
 on:
   pull_request_target:
@@ -16,6 +16,10 @@ on:
 
 jobs:
   deploy:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ["dev", "dev-istio"]
     name: Upgrade KOF
     runs-on: ubuntu-latest
     steps:
@@ -86,8 +90,6 @@ jobs:
         run: |
           make dev-operators-deploy
           make dev-ms-deploy
-          make dev-storage-deploy
-          make dev-collectors-deploy
       - name: "[Main Branch] Checkout KCM repository"
         uses: actions/checkout@v4
         with:
@@ -123,19 +125,20 @@ jobs:
         run: |
           make dev-adopted-deploy KIND_CLUSTER_NAME=regional-adopted
       - name: Run KIND cloud provider
-        run: docker run -d --rm --network kind -v /var/run/docker.sock:/var/run/docker.sock registry.k8s.io/cloud-provider-kind/cloud-controller-manager:v0.6.0
+        run: docker run -d --rm --network kind -v /var/run/docker.sock:/var/run/docker.sock registry.k8s.io/cloud-provider-kind/cloud-controller-manager:v0.7.0
       - name: Deploy KOF Components on Adopted regional cluster
         run: |
-          make dev-regional-deploy-adopted
+          make ${{ matrix.target }}-regional-deploy-adopted
       - name: Run KIND kof child cluster
         run: |
           make dev-adopted-deploy KIND_CLUSTER_NAME=child-adopted
       - name: Configure CoreDNS hosts on child cluster
+        if: ${{ matrix.target == 'dev' }}
         run: |
           make dev-coredns
       - name: Deploy KOF Components on Adopted child cluster
         run: |
-          make dev-child-deploy-adopted
+          make ${{ matrix.target }}-child-deploy-adopted
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"

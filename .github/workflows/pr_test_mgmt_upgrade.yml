@@ -1,0 +1,129 @@
+name: Test Management Upgrade
+
+on:
+  pull_request_target:
+    types:
+      - labeled
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - main
+      - release/*
+    paths:
+      - "charts/**"
+      - "!**.md"
+
+jobs:
+  deploy:
+    name: Upgrade KOF
+    runs-on: ubuntu-latest
+    steps:
+      - id: kof_release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: k0rdent
+          repo: kof
+          excludes: prerelease, draft
+      - id: kcm_release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: k0rdent
+          repo: kcm
+          excludes: prerelease, draft
+      - name: "[Latest Release] Checkout"
+        uses: actions/checkout@v4
+        with:
+          repository: k0rdent/kof
+          ref: ${{ steps.kof_release.outputs.release }}
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+      - name: "[Latest Release] Setup Go"
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "kof-operator/go.mod"
+      - name: "[Latest release] Checkout KCM repository"
+        uses: actions/checkout@v4
+        with:
+          repository: k0rdent/kcm
+          ref: ${{ steps.kcm_release.outputs.release }}
+          path: kcm-repo
+      - name: "[Latest Release] Restore KCM CLI Cache"
+        uses: actions/cache/restore@v4
+        with:
+          path: kcm-repo/bin
+          key: kcm-cli-${{ runner.os }}-${{ steps.kcm_release.outputs.release }}
+          restore-keys: |
+            kcm-cli-${{ runner.os }}-
+      - name: "Restore Docker Cache"
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker
+      - name: "[Latest Release] Install KCM CLI"
+        run: |
+          make -C kcm-repo cli-install
+      - name: "[Latest release] Save KCM CLI Cache"
+        uses: actions/cache/save@v4
+        with:
+          path: kcm-repo/bin
+          key: kcm-cli-${{ runner.os }}-${{ steps.kcm_release.outputs.release }}-${{ github.run_id }}
+      - name: "[Latest release] Create KIND kcm cluster"
+        run: |
+          make -C kcm-repo dev-apply
+      - name: "[Latest Release] Install KOF CLI"
+        run: |
+          make cli-install
+      - name: "[Latest Release] Deploy KOF local registry container"
+        run: |
+          make registry-deploy
+      - name: "[Latest Release] Push KOF Helm Charts"
+        run: |
+          make helm-push
+      - name: "[Latest Release] Deploy KOF Components"
+        run: |
+          make dev-operators-deploy
+          make dev-ms-deploy
+          make dev-storage-deploy
+          make dev-collectors-deploy
+      - name: "[Main Branch] Checkout KCM repository"
+        uses: actions/checkout@v4
+        with:
+          repository: k0rdent/kcm
+          ref: main
+          path: kcm-repo
+      - name: "[Main Branch] Install KCM CLI"
+        run: |
+          make -C kcm-repo cli-install
+      - name: Upgrade KCM
+        run: |
+          make -C kcm-repo dev-upgrade
+      - name: Fetch PR Ref and Checkout Repo
+        uses: ./.github/actions/fetch-pr-ref
+      - name: Install KOF CLI
+        run: |
+          make cli-install
+      - name: Deploy KOF local registry container
+        run: |
+          make registry-deploy
+      - name: Push KOF Helm Charts
+        run: |
+          make helm-push
+      - name: Deploy KOF Components on Mothership cluster
+        run: |
+          make dev-operators-deploy
+          make dev-ms-deploy
+          make dev-storage-deploy
+          make dev-collectors-deploy
+      - name: Make support-bundle
+        if: ${{ failure() }}
+        run: |
+          make support-bundle
+      - name: Archive support-bundle
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: support-bundle.tar.gz
+          path: ./support-bundle-*.tar.gz
